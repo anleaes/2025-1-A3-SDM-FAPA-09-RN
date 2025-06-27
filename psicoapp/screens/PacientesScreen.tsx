@@ -3,47 +3,46 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, Button, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { DrawerParamList } from '../navigation/DrawerNavigator';
 
-type Props = DrawerScreenProps<DrawerParamList, 'Atendimento'>;
+type Props = DrawerScreenProps<DrawerParamList, 'Paciente'>;
 
-export type Atendimento = {
+export type Paciente = {
   id: number;
-  status: boolean;
-  profissional: string; // Assuming this is a string for simplicity
-  cliente: string; // Assuming this is a string for simplicity
-  data: string; // Assuming this is a string for date
+  name: string;
+  cell_phone: string;
+  email: string;
+  gender: string;
 };
 
-const AtendimentoScreen: React.FC<Props> = ({ navigation }) => {
-  const [atendimentos, setAtendimentos] = useState<Atendimento[]>([]);
+const PacienteScreen: React.FC<Props> = ({ navigation }) => {
+  const [pacientes, setPacientes] = useState<Paciente[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchAtendimentos = async () => {
+  const fetchPacientes = async () => {
     setLoading(true);
-    const response = await fetch('http://localhost:8000/atendimentos/');
+    const response = await fetch('http://localhost:8000/pacientes/');
     const data = await response.json();
-    setAtendimentos(data);
+    setPacientes(data);
     setLoading(false);
   };
 
   useEffect(() => {
-    fetchAtendimentos();
+    fetchPacientes();
   }, []);
 
   const handleDelete = async (id: number) => {
-    await fetch(`http://localhost:8000/atendimentos/${id}/`, {
+    await fetch(`http://localhost:8000/pacientes/${id}/`, {
       method: 'DELETE',
     });
-    setAtendimentos(prev => prev.filter(a => a.id !== id));
+    setPacientes(prev => prev.filter(p => p.id !== id));
   };
 
-  const renderItem = ({ item }: { item: Atendimento }) => (
+  const renderItem = ({ item }: { item: Paciente }) => (
     <View style={styles.card}>
-      <Text style={styles.name}>{item.profissional}</Text>
-      <Text style={styles.description}>{item.cliente}</Text>
-      <Text style={styles.date}>{item.data}</Text>
+      <Text style={styles.name}>{item.name}</Text>
+      <Text style={styles.description}>{item.email}</Text>
       <TouchableOpacity
         style={styles.editButton}
-        onPress={() => navigation.navigate('EditAtendimento', { atendimento: item })}
+        onPress={() => navigation.navigate('EditPaciente', { paciente: item })}
       >
         <Text style={styles.editText}>Editar</Text>
       </TouchableOpacity>
@@ -58,18 +57,18 @@ const AtendimentoScreen: React.FC<Props> = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Atendimentos</Text>
+      <Text style={styles.title}>Pacientes</Text>
       {loading ? (
         <ActivityIndicator size="large" color="#4B7BE5" />
       ) : (
         <FlatList
-          data={atendimentos}
+          data={pacientes}
           keyExtractor={(item) => item.id.toString()}
           renderItem={renderItem}
           contentContainerStyle={{ paddingBottom: 20 }}
         />
       )}
-      <Button title="Adicionar Atendimento" onPress={() => navigation.navigate('CreateAtendimento')} />
+      <Button title="Adicionar Paciente" onPress={() => navigation.navigate('CreatePaciente')} />
     </View>
   );
 };
@@ -109,11 +108,6 @@ const styles = StyleSheet.create({
     color: '#666',
     marginTop: 4,
   },
-  date: {
-    fontSize: 12,
-    color: '#999',
-    marginTop: 4,
-  },
   editButton: {
     backgroundColor: '#4B7BE5',
     padding: 8,
@@ -132,4 +126,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AtendimentoScreen;
+export default PacienteScreen;
