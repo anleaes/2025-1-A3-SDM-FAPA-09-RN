@@ -9,6 +9,9 @@ import HomeScreen from '../screens/HomeScreen';
 import AtendimentosScreen, { Atendimento } from '../screens/AtendimentosScreen';
 import CreateAtendimentosScreen from '../screens/CreateAtendimentosScreen';
 import EditAtendimentosScreen from '../screens/EditAtendimentosScreen';
+import MedicamentosScreen, { Medicamento } from '../screens/MedicamentosScreen';
+import CreateMedicamentosScreen from '../screens/CreateMedicamentosScreen';
+import EditMedicamentosScreen from '../screens/EditMedicamentosScreen';
 
 
 
@@ -20,6 +23,9 @@ export type DrawerParamList = {
   Atendimento: undefined;
   CreateAtendimento: undefined; 
   EditAtendimento: { atendimento: Atendimento };
+  Medicamento: undefined;
+  CreateMedicamento: undefined; 
+  EditMedicamento: { medicamento: Medicamento };
   Products: undefined;
   Socialnetworks: undefined;  
 };
@@ -82,6 +88,24 @@ const DrawerNavigator = () => {
         name="EditAtendimento"
         component={EditAtendimentosScreen}
         options={{ drawerItemStyle: { display: 'none' }, title: 'Editar atendimento' }}
+      />
+      <Drawer.Screen
+        name="Medicamento"
+        component={MedicamentosScreen}
+        options={{
+          drawerIcon: ({ color, size }) => <Ionicons name="cart" size={size} color={color} />,
+          title: 'Medicamentos',
+        }}  
+      />
+      <Drawer.Screen
+        name="CreateMedicamento"
+        component={CreateMedicamentosScreen}
+        options={{ drawerItemStyle: { display: 'none' }, title: 'Novo medicamento' }}
+      />
+      <Drawer.Screen
+        name="EditMedicamento"
+        component={EditMedicamentosScreen}
+        options={{ drawerItemStyle: { display: 'none' }, title: 'Editar medicamento' }}
       />
     </Drawer.Navigator>  
   );
