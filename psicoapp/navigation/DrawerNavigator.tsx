@@ -18,6 +18,9 @@ import EditPacientesScreen from '../screens/EditPacientesScreen';
 import PrescricoesScreen, { Prescricao } from '../screens/PrescricoesScreen';
 import CreatePrescricoesScreen from '../screens/CreatePrescricoesScreen';
 import EditPrescricoesScreen from '../screens/EditPrescricoesScreen';
+import ProfissionaisScreen, { Profissional } from '../screens/ProfissionaisScreen';
+import CreateProfissionaisScreen from '../screens/CreateProfissionaisScreen';
+import EditProfissionaisScreen from '../screens/EditProfissionaisScreen';
 
 
 
@@ -38,6 +41,9 @@ export type DrawerParamList = {
   Prescricao: undefined;
   CreatePrescricao: undefined; 
   EditPrescricao: { prescricao: Prescricao };
+  Profissional: undefined;
+  CreateProfissional: undefined; 
+  EditProfissional: { profissional: Profissional };
 };
 
 const Drawer = createDrawerNavigator<DrawerParamList>();
@@ -152,6 +158,24 @@ const DrawerNavigator = () => {
         name="EditPrescricao"
         component={EditPrescricoesScreen}
         options={{ drawerItemStyle: { display: 'none' }, title: 'Editar prescrição' }}
+      />
+      <Drawer.Screen
+        name="Profissional"
+        component={ProfissionaisScreen}
+        options={{
+          drawerIcon: ({ color, size }) => <Ionicons name="cart" size={size} color={color} />,
+          title: 'Profissionais',
+        }}  
+      />
+      <Drawer.Screen
+        name="CreateProfissional"
+        component={CreateProfissionaisScreen}
+        options={{ drawerItemStyle: { display: 'none' }, title: 'Novo profissional' }}
+      />
+      <Drawer.Screen
+        name="EditProfissional"
+        component={EditProfissionaisScreen}
+        options={{ drawerItemStyle: { display: 'none' }, title: 'Editar profissional' }}
       />
     </Drawer.Navigator>  
   );
