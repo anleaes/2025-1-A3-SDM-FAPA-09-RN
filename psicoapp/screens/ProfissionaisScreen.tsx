@@ -7,7 +7,7 @@ import { DrawerParamList } from '../navigation/DrawerNavigator';
 
 type Props = DrawerScreenProps<DrawerParamList, 'Profissional'>;
 
-type Profissional = {
+export type Profissional = {
   id: number;
   name: string;
   cell_phone: string;
