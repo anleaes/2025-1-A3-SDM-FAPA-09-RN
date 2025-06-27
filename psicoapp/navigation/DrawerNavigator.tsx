@@ -6,8 +6,10 @@ import CategoriesScreen, { Category } from '../screens/CategoriesScreen';
 import CreateCategoryScreen from '../screens/CreateCategoryScreen';
 import EditCategoryScreen from '../screens/EditCategoryScreen';
 import HomeScreen from '../screens/HomeScreen';
-import ProductsScreen from '../screens/ProductsScreen';
-import SocialnetworksScreen from '../screens/SocialnetworksScreen';
+import AtendimentosScreen, { Atendimento } from '../screens/AtendimentosScreen';
+import CreateAtendimentosScreen from '../screens/CreateAtendimentosScreen';
+import EditAtendimentosScreen from '../screens/EditAtendimentosScreen';
+
 
 
 export type DrawerParamList = {
@@ -15,6 +17,9 @@ export type DrawerParamList = {
   Categories: undefined;
   CreateCategory: undefined; 
   EditCategory: { category: Category };
+  Atendimento: undefined;
+  CreateAtendimento: undefined; 
+  EditAtendimento: { atendimento: Atendimento };
   Products: undefined;
   Socialnetworks: undefined;  
 };
@@ -61,21 +66,23 @@ const DrawerNavigator = () => {
         options={{ drawerItemStyle: { display: 'none' }, title: 'Editar categoria' }}
       />
       <Drawer.Screen
-        name="Products"
-        component={ProductsScreen}
+        name="Atendimento"
+        component={AtendimentosScreen}
         options={{
           drawerIcon: ({ color, size }) => <Ionicons name="cart" size={size} color={color} />,
-          title: 'Produtos',
-        }}
+          title: 'Atendimentos',
+        }}  
       />
       <Drawer.Screen
-        name="Socialnetworks"
-        component={SocialnetworksScreen}
-        options={{
-          drawerIcon: ({ color, size }) => <Ionicons name="logo-facebook" size={size} color={color} />,
-          title: 'Redes Socias',
-        }}
-      />      
+        name="CreateAtendimento"
+        component={CreateAtendimentosScreen}
+        options={{ drawerItemStyle: { display: 'none' }, title: 'Novo atendimento' }}
+      />
+      <Drawer.Screen
+        name="EditAtendimento"
+        component={EditAtendimentosScreen}
+        options={{ drawerItemStyle: { display: 'none' }, title: 'Editar atendimento' }}
+      />
     </Drawer.Navigator>  
   );
 };
