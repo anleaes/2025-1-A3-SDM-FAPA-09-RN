@@ -1,22 +1,19 @@
-import { Ionicons } from '@expo/vector-icons';
 import { DrawerScreenProps } from '@react-navigation/drawer';
-import { useFocusEffect } from '@react-navigation/native';
-import React, { useCallback, useState } from 'react';
-import { ActivityIndicator, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { ActivityIndicator, Button, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { DrawerParamList } from '../navigation/DrawerNavigator';
 
 type Props = DrawerScreenProps<DrawerParamList, 'Atendimento'>;
 
 export type Atendimento = {
   id: number;
-  profissional: string;
-  cliente: string;
-  data: string;
   status: boolean;
+  profissional: string; // Assuming this is a string for simplicity
+  cliente: string; // Assuming this is a string for simplicity
+  data: string; // Assuming this is a string for date
 };
 
-const AtendimentosScreen = ({ navigation }: Props) => {
-
+const AtendimentoScreen: React.FC<Props> = ({ navigation }) => {
   const [atendimentos, setAtendimentos] = useState<Atendimento[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -28,37 +25,34 @@ const AtendimentosScreen = ({ navigation }: Props) => {
     setLoading(false);
   };
 
-  useFocusEffect(
-    useCallback(() => {
-      fetchAtendimentos();
-    }, [])
-  );
+  useEffect(() => {
+    fetchAtendimentos();
+  }, []);
 
   const handleDelete = async (id: number) => {
-    const res = await fetch(`http://localhost:8000/atendimentos/${id}/`, { 
-        method: 'DELETE',
+    await fetch(`http://localhost:8000/atendimentos/${id}/`, {
+      method: 'DELETE',
     });
     setAtendimentos(prev => prev.filter(a => a.id !== id));
   };
 
   const renderItem = ({ item }: { item: Atendimento }) => (
     <View style={styles.card}>
-      <Text style={styles.name}>{item.profissional} - {item.cliente}</Text>
-      <Text style={styles.description}>{item.data}</Text>
-      <View style={styles.row}>
-        <TouchableOpacity
-          style={styles.editButton}
-          onPress={() => navigation.navigate('EditAtendimento', { atendimento: item })}
-        >
-          <Text style={styles.editText}>Editar</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.deleteButton}
-          onPress={() => handleDelete(item.id)}
-        >
-          <Text style={styles.editText}>Excluir</Text>
-        </TouchableOpacity>
-      </View>
+      <Text style={styles.name}>{item.profissional}</Text>
+      <Text style={styles.description}>{item.cliente}</Text>
+      <Text style={styles.date}>{item.data}</Text>
+      <TouchableOpacity
+        style={styles.editButton}
+        onPress={() => navigation.navigate('EditAtendimento', { atendimento: item })}
+      >
+        <Text style={styles.editText}>Editar</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.deleteButton}
+        onPress={() => handleDelete(item.id)}
+      >
+        <Text style={styles.editText}>Excluir</Text>
+      </TouchableOpacity>
     </View>
   );
 
@@ -72,11 +66,10 @@ const AtendimentosScreen = ({ navigation }: Props) => {
           data={atendimentos}
           keyExtractor={(item) => item.id.toString()}
           renderItem={renderItem}
+          contentContainerStyle={{ paddingBottom: 20 }}
         />
       )}
-      <TouchableOpacity style={styles.fab} onPress={() => navigation.navigate('CreateAtendimento')}>
-        <Ionicons name="add" size={28} color="#fff" />
-      </TouchableOpacity>
+      <Button title="Adicionar Atendimento" onPress={() => navigation.navigate('CreateAtendimento')} />
     </View>
   );
 };
@@ -84,27 +77,41 @@ const AtendimentosScreen = ({ navigation }: Props) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
     backgroundColor: '#fff',
+    paddingHorizontal: 16,
+    paddingTop: 16,
   },
   title: {
     fontSize: 22,
     fontWeight: 'bold',
     marginBottom: 12,
+    color: '#333',
     alignSelf: 'center',
   },
   card: {
-    backgroundColor: '#e6f0ff',
+    backgroundColor: '#f0f4ff',
     padding: 16,
-    borderRadius: 8,
+    borderRadius: 10,
     marginBottom: 12,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOpacity: 0.05,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 4,
   },
   name: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: '600',
+    color: '#222',
   },
   description: {
     fontSize: 14,
+    color: '#666',
+    marginTop: 4,
+  },
+  date: {
+    fontSize: 12,
+    color: '#999',
     marginTop: 4,
   },
   editButton: {
@@ -113,28 +120,16 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     marginRight: 8,
   },
+  editText: { 
+    color: '#fff', 
+    fontWeight: '500' 
+  },
   deleteButton: {
     backgroundColor: '#E54848',
     padding: 8,
     borderRadius: 6,
-  },
-  editText: {
-    color: '#fff',
-  },
-  row: {
-    flexDirection: 'row',
-    marginTop: 10,
-    justifyContent: 'flex-end',
-  },
-  fab: {
-    position: 'absolute',
-    right: 20,
-    bottom: 20,
-    backgroundColor: '#0D47A1',
-    borderRadius: 28,
-    padding: 14,
-    elevation: 4,
+    marginRight: 8,
   },
 });
 
-export default AtendimentosScreen;
+export default AtendimentoScreen;

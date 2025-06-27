@@ -7,12 +7,11 @@ import { DrawerParamList } from '../navigation/DrawerNavigator';
 
 type Props = DrawerScreenProps<DrawerParamList, 'Profissional'>;
 
-export type Profissional = {
+type Profissional = {
   id: number;
   name: string;
   cell_phone: string;
-  gender: 'M' | 'F' | 'O';
-  especialidades: string[];
+  gender: string;
 };
 
 const ProfissionaisScreen = ({ navigation }: Props) => {
@@ -21,8 +20,8 @@ const ProfissionaisScreen = ({ navigation }: Props) => {
 
   const fetchProfissionais = async () => {
     setLoading(true);
-    const res = await fetch('http://localhost:8000/profissionais/');
-    const data = await res.json();
+    const response = await fetch('http://localhost:8000/profissionais/');
+    const data = await response.json();
     setProfissionais(data);
     setLoading(false);
   };
@@ -34,30 +33,30 @@ const ProfissionaisScreen = ({ navigation }: Props) => {
   );
 
   const handleDelete = async (id: number) => {
-    await fetch(`http://localhost:8000/profissionais/${id}/`, { method: 'DELETE' });
+    await fetch(`http://localhost:8000/profissionais/${id}/`, {
+      method: 'DELETE',
+    });
     setProfissionais(prev => prev.filter(p => p.id !== id));
   };
 
   const renderItem = ({ item }: { item: Profissional }) => (
     <View style={styles.card}>
       <Text style={styles.name}>{item.name}</Text>
-      <Text>{item.cell_phone}</Text>
-      <Text>{item.gender}</Text>
-      <Text>Especialidades: {item.especialidades?.join(', ')}</Text>
-      <View style={styles.row}>
-        <TouchableOpacity
-          style={styles.editButton}
-          onPress={() => navigation.navigate('EditProfissional', { profissional: item })}
-        >
-          <Text style={styles.editText}>Editar</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.deleteButton}
-          onPress={() => handleDelete(item.id)}
-        >
-          <Text style={styles.editText}>Excluir</Text>
-        </TouchableOpacity>
-      </View>
+      <Text style={styles.description}>Telefone: {item.cell_phone}</Text>
+      <Text style={styles.description}>Gênero: {item.gender}</Text>
+
+      <TouchableOpacity
+        style={styles.editButton}
+        onPress={() => navigation.navigate('EditProfissional', { profissional: item })}
+      >
+        <Text style={styles.editText}>Editar</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.deleteButton}
+        onPress={() => handleDelete(item.id)}
+      >
+        <Text style={styles.editText}>Excluir</Text>
+      </TouchableOpacity>
     </View>
   );
 
@@ -69,8 +68,9 @@ const ProfissionaisScreen = ({ navigation }: Props) => {
       ) : (
         <FlatList
           data={profissionais}
-          keyExtractor={(item) => item.id.toString()}
+          keyExtractor={item => item.id.toString()}
           renderItem={renderItem}
+          contentContainerStyle={{ paddingBottom: 20 }}
         />
       )}
       <TouchableOpacity
@@ -84,21 +84,63 @@ const ProfissionaisScreen = ({ navigation }: Props) => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16, backgroundColor: '#fff' },
-  title: { fontSize: 22, fontWeight: 'bold', alignSelf: 'center', marginBottom: 12 },
-  card: { backgroundColor: '#e6f0ff', padding: 16, borderRadius: 10, marginBottom: 12 },
-  name: { fontSize: 18, fontWeight: '600', color: '#222' },
-  editButton: { backgroundColor: '#4B7BE5', padding: 8, borderRadius: 6, marginRight: 8 },
-  deleteButton: { backgroundColor: '#E54848', padding: 8, borderRadius: 6 },
-  editText: { color: '#fff', fontWeight: '500' },
-  row: { flexDirection: 'row', marginTop: 8 },
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    paddingHorizontal: 16,
+    paddingTop: 16,
+  },
+  title: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    marginBottom: 12,
+    color: '#333',
+  },
+  card: {
+    backgroundColor: '#f1f1f1',
+    padding: 16,
+    borderRadius: 10,
+    marginBottom: 12,
+  },
+  name: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  description: {
+    fontSize: 14,
+    color: '#666',
+    marginTop: 4,
+  },
+  editButton: {
+    marginTop: 10,
+    backgroundColor: '#4B7BE5',
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 6,
+  },
+  deleteButton: {
+    marginTop: 6,
+    backgroundColor: '#E74C3C',
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 6,
+  },
+  editText: {
+    color: '#fff',
+    textAlign: 'center',
+    fontWeight: 'bold',
+  },
   fab: {
     position: 'absolute',
-    right: 20,
-    bottom: 20,
-    backgroundColor: '#0D47A1',
+    bottom: 24,
+    right: 24,
+    backgroundColor: '#4B7BE5',
+    width: 56,
+    height: 56,
     borderRadius: 28,
-    padding: 14,
+    justifyContent: 'center',
+    alignItems: 'center',
     elevation: 4,
   },
 });

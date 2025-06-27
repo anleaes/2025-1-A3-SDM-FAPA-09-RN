@@ -1,8 +1,6 @@
-import { Ionicons } from '@expo/vector-icons';
 import { DrawerScreenProps } from '@react-navigation/drawer';
-import { useFocusEffect } from 'expo-router';
-import React, { useCallback, useState } from 'react';
-import { ActivityIndicator, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { ActivityIndicator, Button, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { DrawerParamList } from '../navigation/DrawerNavigator';
 
 type Props = DrawerScreenProps<DrawerParamList, 'Paciente'>;
@@ -12,10 +10,10 @@ export type Paciente = {
   name: string;
   cell_phone: string;
   email: string;
-  gender: 'M' | 'F' | 'O';
+  gender: string;
 };
 
-const PacientesScreen = ({ navigation }: Props) => {
+const PacienteScreen: React.FC<Props> = ({ navigation }) => {
   const [pacientes, setPacientes] = useState<Paciente[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -27,36 +25,33 @@ const PacientesScreen = ({ navigation }: Props) => {
     setLoading(false);
   };
 
-  useFocusEffect(
-    useCallback(() => {
-      fetchPacientes();
-    }, [])
-  );
+  useEffect(() => {
+    fetchPacientes();
+  }, []);
 
   const handleDelete = async (id: number) => {
     await fetch(`http://localhost:8000/pacientes/${id}/`, {
       method: 'DELETE',
     });
-    setPacientes((prev) => prev.filter((p) => p.id !== id));
+    setPacientes(prev => prev.filter(p => p.id !== id));
   };
 
   const renderItem = ({ item }: { item: Paciente }) => (
     <View style={styles.card}>
       <Text style={styles.name}>{item.name}</Text>
-      <Text>{item.email}</Text>
-      <Text>{item.cell_phone}</Text>
-      <Text>{item.gender}</Text>
-      <View style={styles.row}>
-        <TouchableOpacity
-          style={styles.editButton}
-          onPress={() => navigation.navigate('EditPaciente', { paciente: item })}
-        >
-          <Text style={styles.editText}>Editar</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.deleteButton} onPress={() => handleDelete(item.id)}>
-          <Text style={styles.editText}>Excluir</Text>
-        </TouchableOpacity>
-      </View>
+      <Text style={styles.description}>{item.email}</Text>
+      <TouchableOpacity
+        style={styles.editButton}
+        onPress={() => navigation.navigate('EditPaciente', { paciente: item })}
+      >
+        <Text style={styles.editText}>Editar</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.deleteButton}
+        onPress={() => handleDelete(item.id)}
+      >
+        <Text style={styles.editText}>Excluir</Text>
+      </TouchableOpacity>
     </View>
   );
 
@@ -73,30 +68,62 @@ const PacientesScreen = ({ navigation }: Props) => {
           contentContainerStyle={{ paddingBottom: 20 }}
         />
       )}
-      <TouchableOpacity style={styles.fab} onPress={() => navigation.navigate('CreatePaciente')}>
-        <Ionicons name="add" size={28} color="#fff" />
-      </TouchableOpacity>
+      <Button title="Adicionar Paciente" onPress={() => navigation.navigate('CreatePaciente')} />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16, backgroundColor: '#fff' },
-  title: { fontSize: 20, fontWeight: 'bold', alignSelf: 'center', marginBottom: 12 },
-  card: { backgroundColor: '#f0f4ff', padding: 16, borderRadius: 10, marginBottom: 12 },
-  name: { fontSize: 18, fontWeight: '600' },
-  row: { flexDirection: 'row', marginTop: 8, justifyContent: 'flex-end' },
-  editButton: { backgroundColor: '#4B7BE5', padding: 8, borderRadius: 6, marginRight: 8 },
-  deleteButton: { backgroundColor: '#E54848', padding: 8, borderRadius: 6 },
-  editText: { color: '#fff', fontWeight: '500' },
-  fab: {
-    position: 'absolute',
-    right: 20,
-    bottom: 20,
-    backgroundColor: '#0D47A1',
-    borderRadius: 28,
-    padding: 14,
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    paddingHorizontal: 16,
+    paddingTop: 16,
+  },
+  title: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    marginBottom: 12,
+    color: '#333',
+    alignSelf: 'center',
+  },
+  card: {
+    backgroundColor: '#f0f4ff',
+    padding: 16,
+    borderRadius: 10,
+    marginBottom: 12,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOpacity: 0.05,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 4,
+  },
+  name: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#222',
+  },
+  description: {
+    fontSize: 14,
+    color: '#666',
+    marginTop: 4,
+  },
+  editButton: {
+    backgroundColor: '#4B7BE5',
+    padding: 8,
+    borderRadius: 6,
+    marginRight: 8,
+  },
+  editText: { 
+    color: '#fff', 
+    fontWeight: '500' 
+  },
+  deleteButton: {
+    backgroundColor: '#E54848',
+    padding: 8,
+    borderRadius: 6,
+    marginRight: 8,
   },
 });
 
-export default PacientesScreen;
+export default PacienteScreen;

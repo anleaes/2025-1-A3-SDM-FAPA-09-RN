@@ -1,10 +1,7 @@
-import { Ionicons } from '@expo/vector-icons';
 import { DrawerScreenProps } from '@react-navigation/drawer';
-import { useFocusEffect } from 'expo-router';
-import React, { useCallback, useState } from 'react';
-import { ActivityIndicator, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { ActivityIndicator, Button, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { DrawerParamList } from '../navigation/DrawerNavigator';
-import { Category } from './CategoriesScreen';
 
 type Props = DrawerScreenProps<DrawerParamList, 'Medicamento'>;
 
@@ -13,11 +10,10 @@ export type Medicamento = {
   name: string;
   description: string;
   price: number;
-  category: Category
+  category: string; // Assuming this is a string for simplicity
 };
 
-const MedicamentosScreen = ({ navigation }: Props) => {
-
+const MedicamentoScreen: React.FC<Props> = ({ navigation }) => {
   const [medicamentos, setMedicamentos] = useState<Medicamento[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -29,17 +25,15 @@ const MedicamentosScreen = ({ navigation }: Props) => {
     setLoading(false);
   };
 
-  useFocusEffect(
-    useCallback(() => {
-      fetchMedicamentos();
-    }, [])
-  );
+  useEffect(() => {
+    fetchMedicamentos();
+  }, []);
 
   const handleDelete = async (id: number) => {
     await fetch(`http://localhost:8000/medicamentos/${id}/`, {
       method: 'DELETE',
     });
-    setMedicamentos((prev) => prev.filter((m) => m.id !== id));
+    setMedicamentos(prev => prev.filter(m => m.id !== id));
   };
 
   const renderItem = ({ item }: { item: Medicamento }) => (
@@ -47,20 +41,18 @@ const MedicamentosScreen = ({ navigation }: Props) => {
       <Text style={styles.name}>{item.name}</Text>
       <Text style={styles.description}>{item.description}</Text>
       <Text style={styles.price}>R$ {item.price.toFixed(2)}</Text>
-      <View style={styles.row}>
-        <TouchableOpacity
-          style={styles.editButton}
-          onPress={() => navigation.navigate('EditMedicamento', { medicamento: item })}
-        >
-          <Text style={styles.editText}>Editar</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.deleteButton}
-          onPress={() => handleDelete(item.id)}
-        >
-          <Text style={styles.editText}>Excluir</Text>
-        </TouchableOpacity>
-      </View>
+      <TouchableOpacity
+        style={styles.editButton}
+        onPress={() => navigation.navigate('EditMedicamento', { medicamento: item })}
+      >
+        <Text style={styles.editText}>Editar</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.deleteButton}
+        onPress={() => handleDelete(item.id)}
+      >
+        <Text style={styles.editText}>Excluir</Text>
+      </TouchableOpacity>
     </View>
   );
 
@@ -77,12 +69,7 @@ const MedicamentosScreen = ({ navigation }: Props) => {
           contentContainerStyle={{ paddingBottom: 20 }}
         />
       )}
-      <TouchableOpacity
-        style={styles.fab}
-        onPress={() => navigation.navigate('CreateMedicamento')}
-      >
-        <Ionicons name="add" size={28} color="#fff" />
-      </TouchableOpacity>
+      <Button title="Adicionar Medicamento" onPress={() => navigation.navigate('CreateMedicamento')} />
     </View>
   );
 };
@@ -102,10 +89,15 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   card: {
-    backgroundColor: '#e6f0ff',
+    backgroundColor: '#f0f4ff',
     padding: 16,
     borderRadius: 10,
     marginBottom: 12,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOpacity: 0.05,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 4,
   },
   name: {
     fontSize: 18,
@@ -119,13 +111,9 @@ const styles = StyleSheet.create({
   },
   price: {
     fontSize: 16,
-    color: '#0a5',
-    marginTop: 6,
-  },
-  row: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    marginTop: 8,
+    fontWeight: 'bold',
+    color: '#4B7BE5',
+    marginTop: 4,
   },
   editButton: {
     backgroundColor: '#4B7BE5',
@@ -133,24 +121,16 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     marginRight: 8,
   },
+  editText: { 
+    color: '#fff', 
+    fontWeight: '500' 
+  },
   deleteButton: {
     backgroundColor: '#E54848',
     padding: 8,
     borderRadius: 6,
-  },
-  editText: {
-    color: '#fff',
-    fontWeight: '500',
-  },
-  fab: {
-    position: 'absolute',
-    right: 20,
-    bottom: 20,
-    backgroundColor: '#0D47A1',
-    borderRadius: 28,
-    padding: 14,
-    elevation: 4,
+    marginRight: 8,
   },
 });
 
-export default MedicamentosScreen;
+export default MedicamentoScreen;
